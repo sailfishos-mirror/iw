@@ -1036,3 +1036,26 @@ COMMAND(set, tidconf, "[peer <MAC address>] tids <mask> [override] [sretry <num>
 	"  $ iw dev wlan0 set tidconf peer xx:xx:xx:xx:xx:xx tids 0x2 bitrates auto\n"
 	"  $ iw dev wlan0 set tidconf peer xx:xx:xx:xx:xx:xx tids 0x2 bitrates limit vht-mcs-5 4:9\n"
 	);
+
+static int handle_set_epcs(struct nl80211_state *state,
+			   struct nl_msg *msg,
+			   int argc, char **argv,
+			   enum id_input id)
+{
+	if (argc != 1)
+		return 1;
+
+	if (strcmp(argv[0], "enable") == 0)
+		NLA_PUT_FLAG(msg, NL80211_ATTR_EPCS);
+	else if (strcmp(argv[0], "disable") != 0)
+		return 1;
+
+	return 0;
+
+nla_put_failure:
+	return 1;
+}
+
+COMMAND(set, epcs, "<enable|disable>",
+	NL80211_CMD_EPCS_CFG, 0, CIB_NETDEV, handle_set_epcs,
+	"Enable/Disable EPCS support");
