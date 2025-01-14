@@ -39,7 +39,7 @@ static int handle_ftm_stats(struct nl_msg *msg, void *arg)
 		return NL_SKIP;
 	}
 
-	nla_parse(info, NL80211_REG_RULE_ATTR_MAX,
+	nla_parse(info, NL80211_FTM_STATS_MAX,
 		  nla_data(tb[NL80211_ATTR_FTM_RESPONDER_STATS]),
 		  nla_len(tb[NL80211_ATTR_FTM_RESPONDER_STATS]),
 		  info_policy);
