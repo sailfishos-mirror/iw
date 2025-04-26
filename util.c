@@ -1399,7 +1399,7 @@ static void __print_he_capa(const __u16 *mac_cap,
 			continue;
 
 		/* Supports more, but overflow? Abort. */
-		if ((i * 2 + 2) * sizeof(le16toh(mcs_set[0])) >= mcs_len)
+		if ((i * 2 + 2) * sizeof(le16toh(mcs_set[0])) > mcs_len)
 			return;
 
 		for (j = 0; j < 2; j++) {
