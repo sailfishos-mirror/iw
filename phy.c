@@ -449,15 +449,14 @@ static int handle_rts(struct nl80211_state *state,
 		      enum id_input id)
 {
 	unsigned int rts;
+	char *end;
 
-	if (argc != 1)
+	if (argc != 1 && argc != 3)
 		return 1;
 
 	if (strcmp("off", argv[0]) == 0)
 		rts = -1;
 	else {
-		char *end;
-
 		if (!*argv[0])
 			return 1;
 		rts = strtoul(argv[0], &end, 10);
@@ -467,11 +466,32 @@ static int handle_rts(struct nl80211_state *state,
 
 	NLA_PUT_U32(msg, NL80211_ATTR_WIPHY_RTS_THRESHOLD, rts);
 
+	argv++;
+	argc--;
+
+	if (argc > 1 && strcmp("radio", argv[0]) == 0) {
+		int radio_idx;
+
+		argv++;
+		argc--;
+
+		radio_idx = strtoul(argv[0], &end, 10);
+		if (*end != '\0')
+			return 1;
+
+		NLA_PUT_U8(msg, NL80211_ATTR_WIPHY_RADIO_INDEX, radio_idx);
+		argv++;
+		argc--;
+	}
+
+	if (argc)
+		return 1;
+
 	return 0;
  nla_put_failure:
 	return -ENOBUFS;
 }
-COMMAND(set, rts, "<rts threshold|off>",
+COMMAND(set, rts, "<rts threshold|off> [radio <radio index>]",
 	NL80211_CMD_SET_WIPHY, 0, CIB_PHY, handle_rts,
 	"Set rts threshold.");
 

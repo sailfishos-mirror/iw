@@ -926,6 +926,10 @@ next:
 					if (!have_combinations)
 						printf("\t\t\tRadio level interface combinations are not supported\n");
 					break;
+				case NL80211_WIPHY_RADIO_ATTR_RTS_THRESHOLD:
+					printf("\t\t\tRTS Threshold: %d\n",
+					       nla_get_u32(radio_prop));
+					break;
 				default:
 					printf("\t\t\t* <failed to parse>\n");
 				}
