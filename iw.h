@@ -305,6 +305,7 @@ int set_bitrates(struct nl_msg *msg, int argc, char **argv,
 		 enum nl80211_attrs attr);
 
 int calc_s1g_ch_center_freq(__u8 ch_index, __u8 s1g_oper_class);
+int parse_link_id(struct nl_msg *msg, int *argc, char ***argv);
 
 /* sections */
 DECLARE_SECTION(ap);

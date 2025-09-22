@@ -2378,3 +2378,34 @@ void print_s1g_capability(const uint8_t *caps)
 	/* Last 2 bits are reserved */
 #undef PRINT_S1G_CAP
 }
+
+int parse_link_id(struct nl_msg *msg, int *argc, char ***argv)
+{
+	unsigned int link_id;
+	char *endptr;
+
+	if (*argc < 1)
+		return 0;
+
+	if (strcmp((*argv)[0], "link-id") != 0)
+		return 0;
+
+	if (*argc == 1)
+		goto usage;
+
+	link_id = strtol((*argv)[1], &endptr, 0);
+	if (*endptr != '\0')
+		goto usage;
+
+	*argv += 2;
+	*argc -= 2;
+
+	NLA_PUT_U8(msg, NL80211_ATTR_MLO_LINK_ID, link_id);
+	return 0;
+
+usage:
+	return HANDLER_RET_USAGE;
+
+nla_put_failure:
+	return -ENOBUFS;
+}
