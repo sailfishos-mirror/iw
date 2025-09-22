@@ -618,9 +618,16 @@ static int handle_bitrates(struct nl80211_state *state,
 			   int argc, char **argv,
 			   enum id_input id)
 {
+	int ret;
+
+	ret = parse_link_id(msg, &argc, &argv);
+	if (ret)
+		return ret;
+
 	return set_bitrates(msg, argc, argv, NL80211_ATTR_TX_RATES);
 }
 
+#define DESCR_MLO "[link-id <LINK ID>] "
 #define DESCR_LEGACY "[legacy-<2.4|5> <legacy rate in Mbps>*]"
 #define DESCR_HT " [ht-mcs-<2.4|5> <MCS index>*]"
 #define DESCR_VHT " [vht-mcs-<2.4|5> <NSS:MCSx,MCSy... | NSS:MCSx-MCSy>*]"
@@ -630,6 +637,7 @@ static int handle_bitrates(struct nl80211_state *state,
 #define DESCR_LTF " [he-ltf-<2.4|5|6> <1|2|4>] [eht-ltf-<2.4|5|6> <1|2|4|6|8>]"
 
 #define DESCR \
+	DESCR_MLO \
 	DESCR_LEGACY \
 	DESCR_HT \
 	DESCR_VHT \
