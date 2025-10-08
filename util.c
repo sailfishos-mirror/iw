@@ -285,6 +285,9 @@ static int parse_akm_suite(const char *cipher_str)
 		return 0x000FAC03;
 	if (!strcmp(cipher_str, "PSK/SHA-256"))
 		return 0x000FAC06;
+	if (!strcmp(cipher_str, "SAE"))
+		return 0x000FAC08;
+
 	return -EINVAL;
 }
 
@@ -373,6 +376,25 @@ int parse_keys(struct nl_msg *msg, char **argv[], int *argc)
 		return 0;
 	}
 
+	if (!memcmp(&arg[pos], "sae_pwd", 7)) {
+		pos += 7;
+		if (arg[pos] != ':')
+			goto explain;
+		pos++;
+
+		NLA_PUT_U32(msg, NL80211_ATTR_WPA_VERSIONS, NL80211_WPA_VERSION_3);
+		NLA_PUT(msg, NL80211_ATTR_SAE_PASSWORD, strlen(&arg[pos]), &arg[pos]);
+		NLA_PUT_U32(msg, NL80211_ATTR_AUTH_TYPE, NL80211_AUTHTYPE_SAE);
+		NLA_PUT_U32(msg, NL80211_ATTR_AKM_SUITES, parse_akm_suite("SAE"));
+		NLA_PUT_U32(msg, NL80211_ATTR_CIPHER_SUITE_GROUP, parse_cipher_suite("CCMP"));
+		NLA_PUT_U32(msg, NL80211_ATTR_CIPHER_SUITES_PAIRWISE, parse_cipher_suite("CCMP"));
+
+		*argv += 1;
+		*argc -= 1;
+
+		return 0;
+	}
+
 	NLA_PUT_FLAG(msg, NL80211_ATTR_PRIVACY);
 
 	keys = nla_nest_start(msg, NL80211_ATTR_KEYS);
@@ -453,10 +475,12 @@ int parse_keys(struct nl_msg *msg, char **argv[], int *argc)
 			"           or 10 or 26 hex digits\n"
 			"for example: d:2:6162636465 is the same as d:2:abcde\n"
 			"or psk:data <AKM Suite> <pairwise CIPHER> <groupwise CIPHER> where\n"
-			"  'data' is the PSK (output of wpa_passphrase and the CIPHER can be CCMP or GCMP\n"
+			"  'data' is the PSK (output of wpa_passphrase and the CIPHER can be CCMP or GCMP)\n"
 			"for example: psk:0123456789abcdef PSK CCMP CCMP\n"
 			"The allowed AKM suites are PSK, FT/PSK, PSK/SHA-256\n"
-			"The allowed Cipher suites are TKIP, CCMP, GCMP, GCMP-256, CCMP-256\n");
+			"The allowed Cipher suites are TKIP, CCMP, GCMP, GCMP-256, CCMP-256\n"
+			"or sae_pwd:data where 'data' is the password\n"
+			"for example: sae_pwd:foobar\n");
 	return 2;
 }
 
