@@ -280,15 +280,25 @@ void parse_bitrate(struct nlattr *bitrate_attr, char *buf, int buflen)
 	if (rinfo[NL80211_RATE_INFO_EHT_MCS])
 		pos += snprintf(pos, buflen - (pos - buf),
 				" EHT-MCS %d", nla_get_u8(rinfo[NL80211_RATE_INFO_EHT_MCS]));
+	if (rinfo[NL80211_RATE_INFO_UHR_MCS]) {
+		if (rinfo[NL80211_RATE_INFO_UHR_ELR])
+			pos += snprintf(pos, buflen - (pos - buf),
+					" UHR-ELR-MCS %d", nla_get_u8(rinfo[NL80211_RATE_INFO_UHR_MCS]));
+		else
+			pos += snprintf(pos, buflen - (pos - buf),
+					" UHR-MCS %d", nla_get_u8(rinfo[NL80211_RATE_INFO_UHR_MCS]));
+	}
 	if (rinfo[NL80211_RATE_INFO_EHT_NSS])
 		pos += snprintf(pos, buflen - (pos - buf),
-				" EHT-NSS %d", nla_get_u8(rinfo[NL80211_RATE_INFO_EHT_NSS]));
+				" NSS %d", nla_get_u8(rinfo[NL80211_RATE_INFO_EHT_NSS]));
 	if (rinfo[NL80211_RATE_INFO_EHT_GI])
 		pos += snprintf(pos, buflen - (pos - buf),
-				" EHT-GI %d", nla_get_u8(rinfo[NL80211_RATE_INFO_EHT_GI]));
+				" GI %d", nla_get_u8(rinfo[NL80211_RATE_INFO_EHT_GI]));
 	if (rinfo[NL80211_RATE_INFO_EHT_RU_ALLOC])
 		pos += snprintf(pos, buflen - (pos - buf),
-				" EHT-RU-ALLOC %d", nla_get_u8(rinfo[NL80211_RATE_INFO_EHT_RU_ALLOC]));
+				" RU-ALLOC %d", nla_get_u8(rinfo[NL80211_RATE_INFO_EHT_RU_ALLOC]));
+	if (rinfo[NL80211_RATE_INFO_UHR_IM])
+		pos += snprintf(pos, buflen - (pos - buf), " UHR-IM");
 }
 
 static char *get_chain_signal(struct nlattr *attr_list)
