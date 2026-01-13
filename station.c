@@ -376,8 +376,8 @@ static void print_nested_sta_handler(struct nlattr *link_sinfo[NL80211_STA_INFO_
 		printf("%sbeacon signal avg:\t%d dBm", indent,
 		       (int8_t)nla_get_u8(link_sinfo[NL80211_STA_INFO_BEACON_SIGNAL_AVG]));
 	if (link_sinfo[NL80211_STA_INFO_T_OFFSET])
-		printf("%sToffset:\t%llu us", indent,
-		       (unsigned long long)nla_get_u64(link_sinfo[NL80211_STA_INFO_T_OFFSET]));
+		printf("%sToffset:\t%lld us", indent,
+		       (long long)nla_get_s64(link_sinfo[NL80211_STA_INFO_T_OFFSET]));
 
 	if (link_sinfo[NL80211_STA_INFO_TX_BITRATE]) {
 		char buf[100];
