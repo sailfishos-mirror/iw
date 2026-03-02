@@ -2097,7 +2097,7 @@ int get_cf1(const struct chanmode *chanmode, unsigned long freq)
 	unsigned int bw80[] = { 5180, 5260, 5500, 5580, 5660, 5745,
 				5955, 6035, 6115, 6195, 6275, 6355,
 				6435, 6515, 6595, 6675, 6755, 6835,
-				6195, 6995 };
+				6915, 6995 };
 	unsigned int bw160[] = { 5180, 5500, 5955, 6115, 6275, 6435,
 				  6595, 6755, 6915 };
 	/* based on 11be D2 E.1 Country information and operating classes */
