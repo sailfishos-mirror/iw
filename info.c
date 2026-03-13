@@ -175,6 +175,9 @@ static void ext_feat_print(enum nl80211_ext_feature_index idx)
 	ext_feat_case(DFS_CONCURRENT, "DFS channel use under concurrent DFS master");
 	ext_feat_case(SPP_AMSDU_SUPPORT, "SPP A-MSDU support");
 	ext_feat_case(BEACON_RATE_EHT, "EHT beacon rate support (AP/mesh)");
+	ext_feat_case(EPPKE, "EPPKE (enhanced privacy protection key exchange)");
+	ext_feat_case(ASSOC_FRAME_ENCRYPTION, "assoc frame encryption");
+	ext_feat_case(IEEE8021X_AUTH, "802.1X over auth frames");
 	}
 }
 
