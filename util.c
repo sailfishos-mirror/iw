@@ -1304,8 +1304,8 @@ static void __print_he_capa(const __u16 *mac_cap,
 	#define PRINT_HE_PHY_CAP_MASK(...) PRINT_HE_CAP_MASK(phy_cap, __VA_ARGS__)
 
 	printf("%s\t\tHE MAC Capabilities (0x", pre);
-	for (i = 0; i < 3; i++)
-		printf("%04x", le16toh(mac_cap[i]));
+	for (i = 0; i < 6; i++)
+		printf("%02x", ((__u8 *)mac_cap)[i]);
 	printf("):\n");
 
 	PRINT_HE_MAC_CAP(0, 0, "+HTC HE Supported");
