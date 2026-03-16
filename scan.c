@@ -1893,6 +1893,14 @@ static void print_wifi_osen(const uint8_t type, uint8_t len,
 	print_osen_ie("OSEN", "OSEN", len, data);
 }
 
+static void print_wifi_rsn_override(const uint8_t type, uint8_t len,
+			    const uint8_t *data,
+			    const struct ie_context *ctx)
+{
+	printf("\n\t");
+	print_rsn_ie("CCMP", "IEEE802.1X", len, data);
+}
+
 static bool print_wifi_wmm_param(const uint8_t *data, uint8_t len)
 {
 	int i;
@@ -2344,6 +2352,8 @@ static const struct ie_print wfa_printers[] = {
 	[16] = { "HotSpot 2.0 Indication", print_hs20_ind, 1, 255, BIT(PRINT_SCAN), },
 	[18] = { "HotSpot 2.0 OSEN", print_wifi_osen, 1, 255, BIT(PRINT_SCAN), },
 	[28] = { "OWE Transition Mode", print_wifi_owe_trans, 7, 255, BIT(PRINT_SCAN), },
+	[41] = { "RSN Element Override", print_wifi_rsn_override, 4, 255, BIT(PRINT_SCAN), },
+	[42] = { "RSN Element Override 2", print_wifi_rsn_override, 4, 255, BIT(PRINT_SCAN), },
 };
 
 static void print_vendor(unsigned char len, unsigned char *data,
