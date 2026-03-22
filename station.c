@@ -354,7 +354,7 @@ static void print_nested_sta_handler(struct nlattr *link_sinfo[NL80211_STA_INFO_
 		printf("%sbeacon loss:\t%u", indent,
 		       nla_get_u32(link_sinfo[NL80211_STA_INFO_BEACON_LOSS]));
 	if (link_sinfo[NL80211_STA_INFO_BEACON_RX])
-		printf("\n\t\tbeacon rx:\t%llu",
+		printf("%sbeacon rx:\t%llu", indent,
 		       (unsigned long long)nla_get_u64(link_sinfo[NL80211_STA_INFO_BEACON_RX]));
 	if (link_sinfo[NL80211_STA_INFO_RX_DROP_MISC])
 		printf("%srx drop misc:\t%llu", indent,
