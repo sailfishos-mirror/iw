@@ -1,5 +1,8 @@
 MAKEFLAGS += --no-print-directory
 
+# disable implicit rules
+.SUFFIXES:
+
 PREFIX ?= /usr
 SBINDIR ?= $(PREFIX)/sbin
 MANDIR ?= $(PREFIX)/share/man
