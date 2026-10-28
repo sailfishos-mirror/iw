@@ -1822,6 +1822,22 @@ static void print_ie(const struct ie_print *p, const uint8_t type, uint8_t len,
 	p->print(type, len, data, ctx);
 }
 
+static void print_time_adv(const uint8_t type, uint8_t len, const uint8_t *data,
+			   const struct ie_context *ctx)
+{
+	printf("\n");
+	printf("\t\t * timing capabilities: %d\n", data[0]);
+
+	/* Time Value, Time Error and Time Update fields are only
+	 * present for timing capabilities value 2 (UTC at TSF 0) */
+	if (data[0] != 2 || len < 17)
+		return;
+
+	printf("\t\t * UTC time at TSF 0: %04d-%02d-%02d %02d:%02d:%02d.%03d\n",
+	       (data[2] << 8) | data[1], data[3], data[4],
+	       data[5], data[6], data[7], (data[9] << 8) | data[8]);
+}
+
 #define PRINT_IGN {		\
 	.name = "IGNORE",	\
 	.print = NULL,		\
@@ -1850,6 +1866,9 @@ static const struct ie_print ieprinters[] = {
 				  print_supp_op_classes, 1, 255, BIT(PRINT_SCAN), },
 	[EID_MEASUREMENT_PILOT_TX] = { "Measurement Pilot Transmission",
 				       print_measurement_pilot_tx, 1, 255, BIT(PRINT_SCAN), },
+	[EID_TIME_ADVERTISEMENT] = { "Time Advertisement", print_time_adv,
+				     1, 255, BIT(PRINT_SCAN), },
+	[EID_TIME_ZONE] = { "Time Zone", print_ssid, 1, 255, BIT(PRINT_SCAN), },
 	[EID_OVERLAP_BSS_SCAN_PARAM] = { "Overlapping BSS scan params",
 					 print_obss_scan_params, 14, 255, BIT(PRINT_SCAN), },
 	[EID_HT_OPERATION] = { "HT operation", print_ht_op, 22, 22, BIT(PRINT_SCAN), },
