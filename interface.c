@@ -442,6 +442,20 @@ static void print_channel(struct nlattr **tb)
 			if (punct)
 				printf(", punctured: 0x%x", punct);
 		}
+
+		if (tb[NL80211_ATTR_NPCA_PRIMARY_FREQ]) {
+			uint32_t npca_freq = nla_get_u32(tb[NL80211_ATTR_NPCA_PRIMARY_FREQ]);
+
+			printf(", NPCA primary: %d MHz", npca_freq);
+
+			if (tb[NL80211_ATTR_NPCA_PUNCT_BITMAP]) {
+				uint32_t npca_punct =
+					nla_get_u32(tb[NL80211_ATTR_NPCA_PUNCT_BITMAP]);
+
+				if (npca_punct)
+					printf(", NPCA punctured: 0x%x", npca_punct);
+			}
+		}
 	} else if (tb[NL80211_ATTR_WIPHY_CHANNEL_TYPE]) {
 		enum nl80211_channel_type channel_type;
 
