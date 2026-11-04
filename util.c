@@ -1815,6 +1815,143 @@ void print_eht_info(struct nlattr *nl_iftype, int band)
 			 he_phy_cap, false, true);
 }
 
+static void __print_uhr_capa(const __u64 mac_cap,
+			     const __u64 phy_cap)
+{
+	const char *indent = "\t";
+	int i;
+
+	#define PRINT_UHR_CAP(_var, _bit, _str) \
+	do { \
+		if (le64toh(_var) & BIT(_bit)) \
+			printf("%s\t\t\t" _str "\n", indent); \
+	} while (0)
+
+	#define PRINT_UHR_CAP_MASK(_var, _shift, _mask, _str) \
+	do { \
+		if ((le64toh(_var) >> _shift) & _mask) \
+			printf("%s\t\t\t" _str ": %llu\n", indent, \
+			       (unsigned long long)((le64toh(_var) >> _shift) & _mask)); \
+	} while (0)
+
+	#define PRINT_UHR_MAC_CAP(...) PRINT_UHR_CAP(mac_cap, __VA_ARGS__)
+	#define PRINT_UHR_PHY_CAP(...) PRINT_UHR_CAP(phy_cap, __VA_ARGS__)
+	#define PRINT_UHR_MAC_CAP_MASK(...) PRINT_UHR_CAP_MASK(mac_cap, __VA_ARGS__)
+	#define PRINT_UHR_PHY_CAP_MASK(...) PRINT_UHR_CAP_MASK(phy_cap, __VA_ARGS__)
+
+	printf("%s\t\tUHR MAC Capabilities (0x", indent);
+	for (i = 0; i < 6; i++)
+		printf("%02x", ((__u8 *)&mac_cap)[i]);
+	printf("):\n");
+
+	PRINT_UHR_MAC_CAP(0, "DPS Supported");
+	PRINT_UHR_MAC_CAP(1, "DPS Assisting Supported");
+	PRINT_UHR_MAC_CAP(2, "DPS Static HCM Supported");
+	PRINT_UHR_MAC_CAP(4, "NPCA Supported");
+	PRINT_UHR_MAC_CAP(5, "Enhanced BSR Supported");
+	PRINT_UHR_MAC_CAP(6, "Additional Mapped TID Supported");
+	PRINT_UHR_MAC_CAP(7, "EOTSP Supported");
+	PRINT_UHR_MAC_CAP(8, "DSO Supported");
+	PRINT_UHR_MAC_CAP(9, "P-EDCA Supported");
+	PRINT_UHR_MAC_CAP(10, "DBE Supported");
+	PRINT_UHR_MAC_CAP(11, "UL LLI Supported");
+	PRINT_UHR_MAC_CAP(12, "P2P LLI Supported");
+	PRINT_UHR_MAC_CAP(13, "PUO Supported");
+	PRINT_UHR_MAC_CAP(14, "AP PUO Supported");
+	PRINT_UHR_MAC_CAP(15, "DUO Supported");
+	PRINT_UHR_MAC_CAP(16, "OM Ctrl UL MU Data Disable RX Supported");
+	PRINT_UHR_MAC_CAP(17, "AOM Supported");
+	PRINT_UHR_MAC_CAP(18, "IFCS Location Supported");
+	PRINT_UHR_MAC_CAP(19, "UHR TRS Supported");
+	PRINT_UHR_MAC_CAP(20, "TXSPG Supported");
+	PRINT_UHR_MAC_CAP(21, "TXOP Return Supported in TXSPG");
+	PRINT_UHR_MAC_CAP_MASK(22, 0xf, "UHR Oper Mode and Param Update Timeout");
+	PRINT_UHR_MAC_CAP_MASK(26, 0x1f, "Param Update Adv Notification interval");
+	PRINT_UHR_MAC_CAP_MASK(31, 0x1f, "Update Indication in TIM interval");
+	PRINT_UHR_MAC_CAP(36, "Bounded ESS");
+	PRINT_UHR_MAC_CAP(37, "BTM Assurance");
+	PRINT_UHR_MAC_CAP(38, "Co-BF Supported");
+	PRINT_UHR_MAC_CAP(39, "Co-SR Supported");
+	PRINT_UHR_MAC_CAP(40, "MAPC Enhanced Measurement Supported");
+	PRINT_UHR_MAC_CAP(41, "HG RTWT Supported");
+	PRINT_UHR_MAC_CAP(42, "Extended Channel Usage Supported");
+	PRINT_UHR_MAC_CAP_MASK(43, 0x7, "Post Update Notification interval");
+
+	printf("%s\t\tUHR PHY Capabilities: (0x", indent);
+	for (i = 0; i < 5; i++)
+		printf("%02x", ((__u8 *)&phy_cap)[i]);
+	printf("):\n");
+
+	PRINT_UHR_PHY_CAP(0, "Max Nss Rx for NDP sounding (<= 80 MHz)");
+	PRINT_UHR_PHY_CAP(1, "Max Nss,total Rx for DL MUMIMO (<= 80 MHz)");
+	PRINT_UHR_PHY_CAP(2, "Max Nss Rx for NDP sounding (= 160 MHz)");
+	PRINT_UHR_PHY_CAP(3, "Max Nss,total Rx for DL MUMIMO (= 160 MHz)");
+	PRINT_UHR_PHY_CAP(4, "Max Nss Rx for NDP sounding (= 320 MHz)");
+	PRINT_UHR_PHY_CAP(5, "Max Nss,total Rx for DL MU-MIMO (= 320 MHz)");
+	PRINT_UHR_PHY_CAP(6, "ELR Tx Supported");
+	PRINT_UHR_PHY_CAP(7, "ELR Rx Supported");
+	PRINT_UHR_PHY_CAP(8, "Partial BW DL-MUMIMO Supported");
+	PRINT_UHR_PHY_CAP(9, "Partial BW UL-MUMIMO Supported");
+	PRINT_UHR_PHY_CAP(10, "MCS 15 Supported");
+	PRINT_UHR_PHY_CAP(11, "2xLDPC Tx Supported");
+	PRINT_UHR_PHY_CAP(12, "2xLDPC Rx Supported");
+	PRINT_UHR_PHY_CAP_MASK(13, 0x3, "UEQM Tx Supported and max NSS Tx");
+	PRINT_UHR_PHY_CAP_MASK(15, 0x3, "UEQM Rx Supported and max NSS Rx");
+	PRINT_UHR_PHY_CAP(18, "Co-BF Joint Sounding Supported");
+	PRINT_UHR_PHY_CAP(19, "IM Tx Supported");
+	PRINT_UHR_PHY_CAP(20, "IM Rx Supported");
+	PRINT_UHR_PHY_CAP(21, "Co-SR Mode 1 Supported");
+	PRINT_UHR_PHY_CAP(22, "Co-SR Mode 2 Supported");
+	PRINT_UHR_PHY_CAP(23, "DRU DBW=20 in PBW=20 MHz Supported");
+	PRINT_UHR_PHY_CAP(24, "DRU DBW=40 in PBW=40 MHz Supported");
+	PRINT_UHR_PHY_CAP(25, "DRU DBW=80 in PBW=80 MHz Supported");
+	PRINT_UHR_PHY_CAP(26, "DRU DBW=80 in PBW=160 MHz Supported");
+	PRINT_UHR_PHY_CAP(27, "DRU DBW=80 in PBW=320 MHz Supported");
+	PRINT_UHR_PHY_CAP(28, "DRU DBW=20 in PBW>=80 MHz Supported");
+	PRINT_UHR_PHY_CAP(29, "DRU DBW=40 in PBW>=80 MHz Supported");
+	PRINT_UHR_PHY_CAP(30, "DRU DBW=60 in PBW>=80 MHz Supported");
+	PRINT_UHR_PHY_CAP(31, "DRU+RRU Hybrid mode Supported");
+}
+
+void print_uhr_info(struct nlattr *nl_iftype)
+{
+	struct nlattr *tb[NL80211_BAND_IFTYPE_ATTR_MAX + 1];
+	__u64 mac_cap = 0;
+	__u64 phy_cap = 0;
+	size_t len;
+
+	nla_parse(tb, NL80211_BAND_IFTYPE_ATTR_MAX,
+		  nla_data(nl_iftype), nla_len(nl_iftype), NULL);
+
+	if (!tb[NL80211_BAND_IFTYPE_ATTR_IFTYPES] ||
+	    !tb[NL80211_BAND_IFTYPE_ATTR_UHR_CAP_MAC])
+		return;
+
+	printf("\t\tUHR Iftypes: ");
+	print_iftype_line(tb[NL80211_BAND_IFTYPE_ATTR_IFTYPES]);
+	printf("\n");
+
+	len = nla_len(tb[NL80211_BAND_IFTYPE_ATTR_UHR_CAP_MAC]);
+	if (len > sizeof(mac_cap))
+		len = sizeof(mac_cap);
+	memcpy(&mac_cap,
+	       nla_data(tb[NL80211_BAND_IFTYPE_ATTR_UHR_CAP_MAC]),
+	       len);
+
+	if (tb[NL80211_BAND_IFTYPE_ATTR_UHR_CAP_PHY]) {
+		len = nla_len(tb[NL80211_BAND_IFTYPE_ATTR_UHR_CAP_PHY]);
+
+		if (len > sizeof(phy_cap))
+			len = sizeof(phy_cap);
+
+		memcpy(&phy_cap,
+		       nla_data(tb[NL80211_BAND_IFTYPE_ATTR_UHR_CAP_PHY]),
+		       len);
+	}
+
+	__print_uhr_capa(mac_cap, phy_cap);
+}
+
 void print_eht_capability(const uint8_t *ie, int len, const uint8_t *he_cap,
 			  bool from_ap)
 {

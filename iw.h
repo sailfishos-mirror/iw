@@ -250,6 +250,7 @@ void print_eht_capability(const uint8_t *ie, int len, const uint8_t *he_cap,
 void print_multi_link(const uint8_t *ie, int len);
 void print_eht_operation(const uint8_t *ie, int len);
 void print_eht_info(struct nlattr *nl_iftype, int band);
+void print_uhr_info(struct nlattr *nl_iftype);
 void print_s1g_capability(const uint8_t *caps);
 
 char *channel_width_name(enum nl80211_chan_width width);
