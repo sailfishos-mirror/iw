@@ -482,7 +482,7 @@ static int print_iface_handler(struct nl_msg *msg, void *arg)
 			nla_parse_nested(tb, NL80211_ATTR_MAX, link, NULL);
 			printf("%s\t - link", indent);
 			if (tb[NL80211_ATTR_MLO_LINK_ID])
-				printf(" ID %2d", nla_get_u32(tb[NL80211_ATTR_MLO_LINK_ID]));
+				printf(" ID %2d", nla_get_u8(tb[NL80211_ATTR_MLO_LINK_ID]));
 			if (tb[NL80211_ATTR_MAC]) {
 				char buf[20];
 
