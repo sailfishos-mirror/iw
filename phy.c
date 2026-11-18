@@ -126,17 +126,28 @@ static int print_channels_handler(struct nl_msg *msg, void *arg)
 						printf("\t  Radar detection\n");
 
 					printf("\t  Channel widths:");
-					if (!tb_freq[NL80211_FREQUENCY_ATTR_NO_20MHZ])
-						printf(" 20MHz");
-					if (ctx->width_40 && !tb_freq[NL80211_FREQUENCY_ATTR_NO_HT40_MINUS])
-						printf(" HT40-");
-					if (ctx->width_40 && !tb_freq[NL80211_FREQUENCY_ATTR_NO_HT40_PLUS])
-						printf(" HT40+");
-					if (ctx->width_80 && !tb_freq[NL80211_FREQUENCY_ATTR_NO_80MHZ])
-						printf(" VHT80");
-					if (ctx->width_160 && !tb_freq[NL80211_FREQUENCY_ATTR_NO_160MHZ])
-						printf(" VHT160");
-					printf("\n");
+					if (ctx->last_band == NL80211_BAND_S1GHZ) {
+						printf(" 1MHz 2MHz");
+						if (!tb_freq[NL80211_FREQUENCY_ATTR_NO_4MHZ])
+							printf(" 4MHz");
+						if (!tb_freq[NL80211_FREQUENCY_ATTR_NO_8MHZ])
+							printf(" 8MHz");
+						if (!tb_freq[NL80211_FREQUENCY_ATTR_NO_16MHZ])
+							printf(" 16MHz");
+						printf("\n");
+					} else {
+						if (!tb_freq[NL80211_FREQUENCY_ATTR_NO_20MHZ])
+							printf(" 20MHz");
+						if (ctx->width_40 && !tb_freq[NL80211_FREQUENCY_ATTR_NO_HT40_MINUS])
+							printf(" HT40-");
+						if (ctx->width_40 && !tb_freq[NL80211_FREQUENCY_ATTR_NO_HT40_PLUS])
+							printf(" HT40+");
+						if (ctx->width_80 && !tb_freq[NL80211_FREQUENCY_ATTR_NO_80MHZ])
+							printf(" VHT80");
+						if (ctx->width_160 && !tb_freq[NL80211_FREQUENCY_ATTR_NO_160MHZ])
+							printf(" VHT160");
+						printf("\n");
+					}
 
 					if (!tb_freq[NL80211_FREQUENCY_ATTR_DISABLED] && tb_freq[NL80211_FREQUENCY_ATTR_DFS_STATE]) {
 						enum nl80211_dfs_state state = nla_get_u32(tb_freq[NL80211_FREQUENCY_ATTR_DFS_STATE]);
