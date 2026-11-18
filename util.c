@@ -507,6 +507,11 @@ enum nl80211_chan_width str_to_bw(const char *str)
 		{ .name = "80+80", .val = NL80211_CHAN_WIDTH_80P80, },
 		{ .name = "160", .val = NL80211_CHAN_WIDTH_160, },
 		{ .name = "320", .val = NL80211_CHAN_WIDTH_320, },
+		{ .name = "1", .val = NL80211_CHAN_WIDTH_1, },
+		{ .name = "2", .val = NL80211_CHAN_WIDTH_2, },
+		{ .name = "4", .val = NL80211_CHAN_WIDTH_4, },
+		{ .name = "8", .val = NL80211_CHAN_WIDTH_8, },
+		{ .name = "16", .val = NL80211_CHAN_WIDTH_16, },
 	};
 	unsigned int i;
 
@@ -552,7 +557,11 @@ static int parse_freqs(struct chandef *chandef, int argc, char **argv,
 	case NL80211_CHAN_WIDTH_4:
 	case NL80211_CHAN_WIDTH_8:
 	case NL80211_CHAN_WIDTH_16:
-		/* can't happen yet */
+		if (!freq_in_khz) {
+			chandef->width = NL80211_CHAN_WIDTH_20_NOHT;
+			return 0;
+		}
+		need_cf1 = chandef->width != NL80211_CHAN_WIDTH_1;
 		break;
 	}
 
@@ -752,7 +761,7 @@ int parse_freqchan(struct chandef *chandef, bool chan, int argc, char **argv,
 
 	/* Set channel width's default value */
 	if (chandef->control_freq < 1000)
-		chandef->width = NL80211_CHAN_WIDTH_16;
+		chandef->width = NL80211_CHAN_WIDTH_1;
 	else
 		chandef->width = NL80211_CHAN_WIDTH_20_NOHT;
 
@@ -782,6 +791,12 @@ int parse_freqchan(struct chandef *chandef, bool chan, int argc, char **argv,
 		chandef->punctured = strtoul(argv[_parsed], &end, 10);
 		if (*end)
 			return 1;
+		_parsed++;
+	}
+
+	if (freq_in_khz && argc > _parsed &&
+	    strcmp(argv[_parsed], "2mhz-primary") == 0) {
+		chandef->s1g_primary_2mhz = true;
 		_parsed++;
 	}
 
@@ -849,6 +864,9 @@ int put_chandef(struct nl_msg *msg, struct chandef *chandef)
 
 	if (chandef->punctured)
 		NLA_PUT_U32(msg, NL80211_ATTR_PUNCT_BITMAP, chandef->punctured);
+
+	if (chandef->s1g_primary_2mhz)
+		NLA_PUT_FLAG(msg, NL80211_ATTR_S1G_PRIMARY_2MHZ);
 
 	return 0;
 

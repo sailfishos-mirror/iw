@@ -114,6 +114,7 @@ struct chandef {
 	unsigned int center_freq1_offset;
 	unsigned int center_freq2;
 	unsigned int punctured;
+	bool s1g_primary_2mhz;
 };
 
 #define ARRAY_SIZE(ar) (sizeof(ar)/sizeof(ar[0]))
@@ -223,8 +224,8 @@ int parse_keys(struct nl_msg *msg, char **argv[], int *argc);
 #define PARSE_FREQ_ARGS(pfx, sfx) \
 	pfx _PARSE_FREQ_ARGS_OPT1 sfx "\n" \
 	pfx _PARSE_FREQ_ARGS_OPT2 sfx
-#define _PARSE_FREQ_KHZ_ARGS_OPT1 "<freq in KHz> [1MHz|2MHz|4MHz|8MHz|16MHz]"
-#define _PARSE_FREQ_KHZ_ARGS_OPT2 "<control freq in KHz> [1|2|4|8|16] [<center1_freq> [<center2_freq>]]"
+#define _PARSE_FREQ_KHZ_ARGS_OPT1 "<freq in KHz> [1MHz|2MHz|4MHz|8MHz|16MHz] [2mhz-primary]"
+#define _PARSE_FREQ_KHZ_ARGS_OPT2 "<control freq in KHz> [1|2|4|8|16] [<center1_freq in KHz>] [2mhz-primary]"
 #define PARSE_FREQ_KHZ_ARGS(pfx, sfx) \
 	pfx _PARSE_FREQ_KHZ_ARGS_OPT1 sfx "\n" \
 	pfx _PARSE_FREQ_KHZ_ARGS_OPT2 sfx
