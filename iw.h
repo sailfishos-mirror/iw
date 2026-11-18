@@ -260,6 +260,7 @@ void print_iftype_line(struct nlattr *attr);
 const char *command_name(enum nl80211_commands cmd);
 int ieee80211_channel_to_frequency(int chan, enum nl80211_band band);
 int ieee80211_frequency_to_channel(int freq);
+int ieee80211_freq_khz_to_channel(int freq);
 
 void print_ssid_escaped(const uint8_t len, const uint8_t *data);
 

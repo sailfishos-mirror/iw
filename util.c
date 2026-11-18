@@ -197,10 +197,14 @@ int ieee80211_channel_to_frequency(int chan, enum nl80211_band band)
 	return 0; /* not supported */
 }
 
-int ieee80211_frequency_to_channel(int freq)
+int ieee80211_freq_khz_to_channel(int freq)
 {
-	if (freq < 1000)
-		return 0;
+	/* Only US-2020 for S1G currently */
+	if (freq < MHZ_TO_KHZ(1000))
+		return (freq - 902000) / 500;
+
+	freq = KHZ_TO_MHZ(freq);
+
 	/* see 802.11-2007 17.3.8.3.2 and Annex J */
 	if (freq == 2484)
 		return 14;
@@ -220,6 +224,11 @@ int ieee80211_frequency_to_channel(int freq)
 		return (freq - 56160) / 2160;
 	else
 		return 0;
+}
+
+int ieee80211_frequency_to_channel(int freq)
+{
+	return ieee80211_freq_khz_to_channel(MHZ_TO_KHZ(freq));
 }
 
 void print_ssid_escaped(const uint8_t len, const uint8_t *data)
