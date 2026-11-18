@@ -87,14 +87,22 @@ static int print_channels_handler(struct nl_msg *msg, void *arg)
 
 			if (tb_band[NL80211_BAND_ATTR_FREQS]) {
 				nla_for_each_nested(nl_freq, tb_band[NL80211_BAND_ATTR_FREQS], rem_freq) {
-					uint32_t freq;
+					uint32_t freq, freq_offset = 0;
+					int chan;
 
 					nla_parse(tb_freq, NL80211_FREQUENCY_ATTR_MAX, nla_data(nl_freq), nla_len(nl_freq), NULL);
 
 					if (!tb_freq[NL80211_FREQUENCY_ATTR_FREQ])
 						continue;
 					freq = nla_get_u32(tb_freq[NL80211_FREQUENCY_ATTR_FREQ]);
-					printf("\t* %d MHz [%d] ", freq, ieee80211_frequency_to_channel(freq));
+					if (tb_freq[NL80211_FREQUENCY_ATTR_OFFSET])
+						freq_offset = nla_get_u32(tb_freq[NL80211_FREQUENCY_ATTR_OFFSET]);
+
+					chan = ieee80211_freq_khz_to_channel(MHZ_TO_KHZ(freq) + freq_offset);
+					if (freq_offset)
+						printf("\t* %d.%03d MHz [%d] ", freq, freq_offset, chan);
+					else
+						printf("\t* %d MHz [%d] ", freq, chan);
 
 					if (tb_freq[NL80211_FREQUENCY_ATTR_DISABLED]) {
 						printf("(disabled)\n");

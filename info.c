@@ -484,7 +484,8 @@ static int print_phy_handler(struct nl_msg *msg, void *arg)
 					band_had_freq = true;
 				}
 				nla_for_each_nested(nl_freq, tb_band[NL80211_BAND_ATTR_FREQS], rem_freq) {
-					uint32_t freq;
+					uint32_t freq, freq_offset = 0;
+					int chan;
 
 					nla_parse(tb_freq, NL80211_FREQUENCY_ATTR_MAX, nla_data(nl_freq),
 						  nla_len(nl_freq), freq_policy);
@@ -492,15 +493,16 @@ static int print_phy_handler(struct nl_msg *msg, void *arg)
 						continue;
 					freq = nla_get_u32(tb_freq[NL80211_FREQUENCY_ATTR_FREQ]);
 					if (tb_freq[NL80211_FREQUENCY_ATTR_OFFSET]) {
-						uint32_t offset = nla_get_u32(
+						freq_offset = nla_get_u32(
 							tb_freq[NL80211_FREQUENCY_ATTR_OFFSET]);
-						printf("\t\t\t* %d.%d MHz", freq, offset);
+						printf("\t\t\t* %d.%d MHz", freq, freq_offset);
 					} else {
 						printf("\t\t\t* %d MHz", freq);
 					}
 
-					if (ieee80211_frequency_to_channel(freq))
-						printf(" [%d]", ieee80211_frequency_to_channel(freq));
+					chan = ieee80211_freq_khz_to_channel(MHZ_TO_KHZ(freq) + freq_offset);
+					if (chan)
+						printf(" [%d]", chan);
 
 					if (tb_freq[NL80211_FREQUENCY_ATTR_MAX_TX_POWER] &&
 					    !tb_freq[NL80211_FREQUENCY_ATTR_DISABLED])

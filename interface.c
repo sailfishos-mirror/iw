@@ -367,24 +367,71 @@ char *channel_width_name(enum nl80211_chan_width width)
 		return "10 MHz";
 	case NL80211_CHAN_WIDTH_320:
 		return "320 MHz";
+	case NL80211_CHAN_WIDTH_1:
+		return "1 MHz";
+	case NL80211_CHAN_WIDTH_2:
+		return "2 MHz";
+	case NL80211_CHAN_WIDTH_4:
+		return "4 MHz";
+	case NL80211_CHAN_WIDTH_8:
+		return "8 MHz";
+	case NL80211_CHAN_WIDTH_16:
+		return "16 MHz";
 	default:
 		return "unknown";
+	}
+}
+
+static bool is_s1g_width(enum nl80211_chan_width width)
+{
+	switch (width) {
+	case NL80211_CHAN_WIDTH_1:
+	case NL80211_CHAN_WIDTH_2:
+	case NL80211_CHAN_WIDTH_4:
+	case NL80211_CHAN_WIDTH_8:
+	case NL80211_CHAN_WIDTH_16:
+		return true;
+	default:
+		return false;
 	}
 }
 
 static void print_channel(struct nlattr **tb)
 {
 	uint32_t freq = nla_get_u32(tb[NL80211_ATTR_WIPHY_FREQ]);
+	uint32_t freq_offset = 0;
+	int chan;
 
-	printf("channel %d (%d MHz)",
-	       ieee80211_frequency_to_channel(freq), freq);
+	if (tb[NL80211_ATTR_WIPHY_FREQ_OFFSET])
+		freq_offset = nla_get_u32(tb[NL80211_ATTR_WIPHY_FREQ_OFFSET]);
+
+	chan = ieee80211_freq_khz_to_channel(MHZ_TO_KHZ(freq) + freq_offset);
+
+	if (freq_offset)
+		printf("channel %d (%d.%03d MHz)", chan, freq, freq_offset);
+	else
+		printf("channel %d (%d MHz)", chan, freq);
 
 	if (tb[NL80211_ATTR_CHANNEL_WIDTH]) {
-		printf(", width: %s",
-			channel_width_name(nla_get_u32(tb[NL80211_ATTR_CHANNEL_WIDTH])));
-		if (tb[NL80211_ATTR_CENTER_FREQ1])
-			printf(", center1: %d MHz",
-				nla_get_u32(tb[NL80211_ATTR_CENTER_FREQ1]));
+		enum nl80211_chan_width width =
+			nla_get_u32(tb[NL80211_ATTR_CHANNEL_WIDTH]);
+
+		printf(", width: %s", channel_width_name(width));
+		if (tb[NL80211_ATTR_CENTER_FREQ1]) {
+			uint32_t cf1 = nla_get_u32(tb[NL80211_ATTR_CENTER_FREQ1]);
+			uint32_t cf1_offset = 0;
+
+			if (tb[NL80211_ATTR_CENTER_FREQ1_OFFSET])
+				cf1_offset = nla_get_u32(tb[NL80211_ATTR_CENTER_FREQ1_OFFSET]);
+
+			if (cf1_offset)
+				printf(", center1: %d.%03d MHz", cf1, cf1_offset);
+			else
+				printf(", center1: %d MHz", cf1);
+		}
+		if (is_s1g_width(width))
+			printf(", pri_2mhz: %d",
+			       !!tb[NL80211_ATTR_S1G_PRIMARY_2MHZ]);
 		if (tb[NL80211_ATTR_CENTER_FREQ2])
 			printf(", center2: %d MHz",
 				nla_get_u32(tb[NL80211_ATTR_CENTER_FREQ2]));
