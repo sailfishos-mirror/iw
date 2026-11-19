@@ -178,6 +178,11 @@ static void ext_feat_print(enum nl80211_ext_feature_index idx)
 	ext_feat_case(EPPKE, "EPPKE (enhanced privacy protection key exchange)");
 	ext_feat_case(ASSOC_FRAME_ENCRYPTION, "assoc frame encryption");
 	ext_feat_case(IEEE8021X_AUTH, "802.1X over auth frames");
+	ext_feat_case(ROC_ADDR_FILTER, "MAC address filter in ROC");
+	ext_feat_case(SET_KEY_LTF_SEED, "LTF keyseed in PTK key install");
+	ext_feat_case(PROBE_AP, "probe associated AP");
+	ext_feat_case(FAST_ROAM_OFFLOAD, "FT/OKC offload");
+	ext_feat_case(UPDATE_BEACON, "update beacon command");
 	}
 }
 
